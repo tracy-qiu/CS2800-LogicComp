@@ -447,7 +447,6 @@ theorem thm2': ∀ x y : ℕ, (x > 0 ∧ y > 0) → x > 0
     assumption
 end
 
-
 theorem thm3': ∀ x y : ℕ, x > 0 ∧ y > 0 → x > 0 
 -- same proof but calling happens in multiple steps:
 := begin

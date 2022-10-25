@@ -8,7 +8,7 @@ This homework is done in groups. Same logistic instructions as in the last homew
 
 Replace "..." below with the names of the people in your group.
 
-Names of ALL group members: ...
+Names of ALL group members: Tracy Qiu, Anushka Mantri, Erica Sammarco
 -/
 
 /-
@@ -131,26 +131,256 @@ Do the above A,B,C,D,E steps for each of the following formulas:
 
 -- ANSWERS:
 
-/- 1. x → (y → x) is ... 
+/- 1. x → (y → x) is ...
+
+A: 
+x | y | y → x | x → (y → x) 
+---------------------------
+T | T |   T   |   T      
+T | F |   T   |   T       
+F | T |   F   |   T       
+F | F |   T   |   T 
+
+B: x → (y → x) is satisfiable and valid. 
+
+C: 4
+
+D: true
+
+E:
 -/
-... 
+theorem x_implies_y_implies_x_equiv_true: ∀ x y : Prop, x → (y → x) ↔ true
+:= begin
+    intros,
+    split, 
+    {
+        intro, 
+        trivial, 
+    }, 
+    {
+        intros,
+        assumption, 
+    }
+end
+
 
 
 /- 2. x → (y → z)  is ... 
+
+A: 
+x | y | z | (y → z) | x → (y → z)
+---------------------------
+T | T | T |    T    |   T 
+T | T | F |    F    |   F  
+T | F | T |    T    |   T
+T | F | F |    T    |   T
+F | T | T |    T    |   T
+F | T | F |    F    |   T
+F | F | T |    T    |   T
+F | F | F |    T    |   T
+
+B:  x → (y → z)  is falsifibale and satisfiable
+
+C: 7
+
+D: ¬x ∨ ¬y ∨ z
+
+E:
 -/
-... 
+theorem x_implies_y_implies_z_equiv_nx_or_ny_z: ∀ x y z : Prop,  x → (y → z) ↔ ¬x ∨ ¬y ∨ z
+:= begin
+    intros x y z,
+    split, 
+    {
+        intro h1,
+        left,
+        intro h2,
+        have h3 := h1 h2,
+        sorry, 
+    }, 
+    {
+        intro,
+        intros h1 h2, 
+        try { assumption }, 
+        sorry,
+    }
+end
+
+theorem x_implies_y_implies_z_equiv_nx_or_ny_z_bool: ∀ x y z : bool, (bimp x (bimp y  z))  = bnot x || bnot y || z 
+:= begin
+    intros x y z,
+    cases x,
+    {
+        refl,
+    }, 
+    {
+        refl,
+    }
+end
 
 
 /- 3. (x → y) → z  is ... 
+
+A: 
+x | y | z | (x → y) | (x → y) → z
+---------------------------
+T | T | T |    T    |   T 
+T | T | F |    T    |   F  
+T | F | T |    F    |   T
+T | F | F |    F    |   T
+F | T | T |    T    |   T
+F | T | F |    T    |   F
+F | F | T |    T    |   T
+F | F | F |    T    |   F
+
+B:  (x → y) → z  is falsifibale and satisfiable
+
+C: 5
+
+D: (x ∧ ¬y) ∨ z
+
+E:
 -/
-... 
+
+theorem x_implies_y_implies_z_equiv_x_and_ny_or_z: ∀ x y z : Prop,  (x → y) → z ↔ (x ∧ ¬y) ∨ z
+:= begin
+    intros,
+    split, 
+    {
+        intro h1,
+        left, 
+        split, 
+        {
+            sorry,
+        }, 
+        {
+            intro, 
+            sorry,
+        }
+    },
+    {
+        intro h1,
+        intro h2,
+        sorry,
+    }
+end
+
+theorem x_implies_y_implies_z_equiv_x_and_ny_or_z_bool: ∀ x y z : bool,  (bimp (bimp x y) z) = (x && (bnot y)) || z
+:= begin
+    intros x y z,
+    cases x,
+    {
+        refl,
+    }, 
+    {
+        refl,
+    }
+end
 
 
 /- 4. (p → (q ∧ r)) ∧ (r → ¬q)  is ... 
+
+A: 
+p | q | r | (q ∧ r) | (p → (q ∧ r)) | ¬q | (r → ¬q) | (p → (q ∧ r)) ∧ (r → ¬q)
+--------------------------------------------------------------------------------
+T | T | T |    T    |      T        |  F |    F     |            F
+T | T | F |    F    |      F        |  F |    T     |            F
+T | F | T |    F    |      F        |  T |    T     |            F
+T | F | F |    F    |      F        |  T |    T     |            F
+F | T | T |    T    |      T        |  F |    F     |            F
+F | T | F |    F    |      T        |  F |    T     |            T
+F | F | T |    F    |      T        |  T |    T     |            T
+F | F | F |    F    |      T        |  T |    T     |            T
+
+B: (p → (q ∧ r)) ∧ (r → ¬q)  is satisfiable and falsifiable.#check
+
+C: 3
+
+D: (¬p ∧ ¬ q) ∨ (¬p ∧ ¬r)
+
+E:
 -/
-... 
+theorem four_given_equiv: ∀ p q r : Prop,  (p → (q ∧ r)) ∧ (r → ¬q) ↔ (¬p ∧ ¬ q) ∨ (¬p ∧ ¬r)
+:= begin
+    intros, 
+    split, 
+    {
+        intro h1,
+        right,
+        cases h1, 
+        {
+            split, 
+            {
+                intro,
+                sorry,
+            },
+            {
+                sorry, 
+            }
+        }
+    }, 
+    {
+        intro h1,
+        split, 
+        {
+            intro h2,
+            split, 
+            {
+                sorry,
+            },
+            {
+                sorry,
+            }
+        },
+        {
+            intro h2, 
+            intro h3,
+            sorry, 
+        } 
+    }
+end
 
-
+theorem four_equiv_bool: ∀ p q r : bool,  (bimp p (q && r)) && (bimp r (bnot q)) = (bnot p && bnot q) || (bnot p && bnot r) 
+:= begin
+    intros x y z,
+    cases x,
+    {
+        cases y, 
+        {
+            cases z, 
+            {
+                refl,
+            }, 
+            {
+                refl,
+            }
+        },
+        {
+            cases z,
+            {
+                refl,
+            },
+            {
+                refl,
+            }
+        }
+    }, 
+    {
+        cases y, 
+        {
+            refl,
+        },
+        {
+            cases z,
+            {
+                refl,
+            },
+            {
+                refl
+            }
+        }
+    }
+end
 
 
 /- HWK05-02:
@@ -158,12 +388,13 @@ prove the following:
 -/
 theorem conjunction_right: ∀ P Q : Prop, (P ∧ Q) → Q 
 := begin
--- ANSWER:
-    ... 
+    intros P Q,
+    intro h1,
+    cases h1,
+    {
+        assumption,
+    }, 
 end
-
-
-
 
 /- HWK05-03:
 prove the following:
@@ -171,12 +402,17 @@ prove the following:
 
 theorem p_and_q_implies_q_and_p: ∀ p q : Prop, (p ∧ q) → (q ∧ p) 
 := begin
--- ANSWER:
-    ... 
+    intros p q,
+    intro h1,
+    cases h1,
+    {
+        split,
+        repeat 
+        {
+            assumption,
+        }
+    }
 end
-
-
-
 
 
 -- recall our weekday example:
@@ -214,8 +450,38 @@ theorem next_workday_is_a_5day_weekday: ∀ d : weekday,
     next_workday d = thursday ∨ 
     next_workday d = friday 
 := begin
--- ANSWER:
- ... 
+    intro d, 
+    cases d, 
+    repeat
+    {
+        left,
+        refl,
+    },
+    {
+        right,
+        left,
+        refl,
+    },
+    {
+        right,
+        right,
+        left,
+        refl,
+    },
+    {
+        right,
+        right,
+        right,
+        left,
+        refl,
+    },
+    {
+        right, 
+        right,
+        right,
+        right,
+        refl,
+    }
 end
 
 
@@ -227,7 +493,18 @@ theorem next_workday_not_weekend:
     ∀ d : weekday, next_workday d ≠ sunday ∧ next_workday d ≠ saturday 
 := begin
 -- ANSWER:
-   ... 
+    intro d, 
+    cases d, 
+    repeat
+    {
+        split,
+        repeat 
+        {
+            intro h1,
+            rw next_workday at h1,
+            trivial,
+        }, 
+    },
 end
 
 
@@ -236,8 +513,23 @@ end
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem p_or_p: ∀ P : Prop, (P ∨ P) ↔ P 
--- ANSWER:
-... 
+:= begin
+    intro P,
+    split, 
+    {
+        intro h1,
+        cases h1, 
+        repeat
+        {
+            assumption,
+        }
+    },
+    {
+        intro h1, 
+        left,
+        assumption,
+    }
+end
 
 
 
@@ -245,18 +537,48 @@ theorem p_or_p: ∀ P : Prop, (P ∨ P) ↔ P
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem p_and_p: ∀ P : Prop, (P ∧ P) ↔ P 
--- ANSWER:
-... 
-
+:= begin
+    intro P,
+    split, 
+    {
+        intro h1,
+        cases h1, 
+        {
+            assumption, 
+        },
+    }, 
+    {
+        intro h1,
+        split, 
+        repeat
+        {
+            assumption, 
+        }
+    },
+end
 
 
 /- HWK05-07:
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem or_commut: ∀ P Q : Prop, (P ∨ Q) ↔ (Q ∨ P) 
--- ANSWER:
-... 
-
+:= begin
+    intros P Q,
+    split, 
+    repeat
+    {
+        intro h1,
+        cases h1, 
+        {
+            right, 
+            assumption,
+        },
+        {
+            left,
+            assumption,
+        }
+    },
+end
 
 
 
@@ -264,8 +586,28 @@ theorem or_commut: ∀ P Q : Prop, (P ∨ Q) ↔ (Q ∨ P)
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem iff_commut: ∀ P Q : Prop, (P ↔ Q) ↔ (Q ↔ P) 
--- ANSWER:
-... 
+:= begin
+    intros P Q,
+    split, 
+    repeat
+    {
+        intro h1,
+        cases h1 with h2 h3, 
+        {
+            split, 
+            {
+                intro h4,
+                have h5 := h3 h4,
+                assumption,
+            },
+            {
+                intro h4,
+                have h5 := h2 h4,
+                assumption,
+            }
+        }
+    }
+end
 
 
 
@@ -273,29 +615,130 @@ theorem iff_commut: ∀ P Q : Prop, (P ↔ Q) ↔ (Q ↔ P)
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem or_associat: ∀ A B C : Prop, A ∨ (B ∨ C) ↔ (A ∨ B) ∨ C
--- ANSWER:
-... 
-
-
-
-
+:= begin
+    intros A B C,
+    split, 
+    {
+        intro h1,
+        cases h1,
+        {
+            left,
+            left,
+            assumption
+        },
+        {
+            cases h1,
+            {
+                left,
+                right,
+                assumption,
+            },
+            {
+                right,
+                assumption,
+            }
+        }
+    },
+    {
+        intro h1,
+        cases h1,
+        {
+            cases h1,
+            {
+                left, 
+                assumption,
+            },
+            {
+                right,
+                left,
+                assumption
+            }
+        }, 
+        {
+            right,
+            right,
+            assumption,
+        }
+    },
+end
 
 /- HWK05-10:
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem or_distrib_and: ∀ A B C : Prop, A ∨ (B ∧ C) ↔ (A ∨ B) ∧ (A ∨ C)
--- ANSWER:
-... 
-
+:= begin
+    intros A B C,
+    split, 
+    {
+        intro h1,
+        split,
+        repeat
+        {
+            cases h1,
+            {
+                left,
+                assumption,
+            },
+            {
+                cases h1,
+                right,
+                assumption,
+            }
+        },
+    },
+    {
+        intro h1,
+        cases h1 with h2 h3,
+        {
+            cases h2,
+            {
+                left,
+                assumption,
+            },
+            {
+                cases h3,
+                {
+                    left,
+                    assumption,
+                }, 
+                {
+                    right,
+                    split,
+                    repeat
+                    {
+                        assumption
+                    }
+                }
+            }
+        }
+    }
+end 
 
 
 /- HWK05-11:
 is the theorem below true? if so prove it, if not, exhibit a counterexample:
 -/
 theorem and_absorb_or: ∀ P Q : Prop, P ∧ (P ∨ Q) ↔ P 
--- ANSWER:
-... 
-
+:= begin
+    intros P Q,
+    split, 
+    {
+        intro h1,
+        cases h1,
+        assumption,
+    },
+    {
+        intro h1,
+        split,
+        {
+            assumption
+        },
+        {
+            left,
+            assumption
+        }
+    }
+end
 
 /- HWK05-12:
 the lemma nat.zero_lt_succ is defined (proven) in the LEAN library. you don't have to know how it's proven. you only need to be able to understand (1) what it says, and (2) how to use it. 
@@ -308,15 +751,10 @@ prove that 0 < 2 by using the "have" tactic to call lemma nat.zero_lt_succ
 -/
 example: 0 < 2  
 := begin
--- ANSWER:
-    ... 
+    have h1 := nat.zero_lt_succ,
+    have h2 := h1 1,
+    assumption, 
 end
-
-
-
-
-
-
 
 /- HWK05-13: 
 let's continue formalizing the correctness of sorting programs like isort from your hwk01. in HWK04 we asked you to define functions leq and sorted. correct implementations of those are given below: 
@@ -343,14 +781,14 @@ def fsrt123: list ℕ → list ℕ := λ L, [1,2,3]
 
 theorem fsrtempty_sorted: ∀ L : list ℕ, sorted (fsrtempty L) = tt  
 := begin
--- ANSWER:
-... 
+    intros L,
+    refl,
 end
 
 theorem fsrt123_sorted: ∀ L : list ℕ, sorted (fsrt123 L) = tt  
 := begin
--- ANSWER:
-  ... 
+    intros L,
+    refl,
 end
 
 /- HWK05-13-2:
@@ -361,7 +799,8 @@ define a function occurno : ℕ → list ℕ → ℕ  which takes a nat x and a 
 
 -- ANSWER:
 def occurno : ℕ → list ℕ → ℕ  
-  ... 
+  | _ [] := 0
+  | x (y :: L) := ite (x = y) (1 + (occurno x L)) (occurno x L)
 
 -- DO NOT DELETE:
 example: occurno 0 [] = 0 := begin refl, end 
@@ -380,7 +819,7 @@ define a function permutation : list ℕ → list ℕ → Prop which takes two l
 
 -- ANSWER:
 def permutation (L1 L2 : list ℕ) : Prop := 
-  ... 
+    ∀ (x : ℕ), (occurno x L1) = (occurno x L2)
 
 #check permutation 
 
@@ -400,17 +839,12 @@ def isort : list ℕ → list ℕ
 --
 
 -- ANSWER:
-theorem isort_correct: ... 
+theorem isort_correct: ∀ (L : list ℕ), permutation L (isort L) ∧ sorted (isort L) = tt
 := begin
     -- do not delete! 
     intro,
     sorry,
 end
-
-
-
-
-
 
 
 /- HWK05-14: 
@@ -427,8 +861,7 @@ prove the lemma plusind0:
 -/
 lemma plusind0: plus 0 0 = 0 
 := begin 
--- ANSWER:
-   ... 
+    refl,
 end
 
 /- HWK05-14-2: 
@@ -436,8 +869,10 @@ prove the lemma plusind1:
 -/
 lemma plusind1: ∀ (x : ℕ), plus x 0 = x → plus (nat.succ x) 0 = nat.succ x
 := begin
--- ANSWER:
-    ... 
+    intro x,
+    intro h1,
+    dunfold plus,
+    rw h1,
 end
 
 /-
@@ -456,8 +891,12 @@ use the above three lemmas, and the "have" tactic, in order to prove the theorem
 -/
 theorem plus_x_0: ∀ x : ℕ, plus x 0 = x 
 := begin
--- ANSWER:
-    ... 
+    intro x,
+    have h0 := plusind0,
+    have h1 := plusind1,
+    have h2 := plusind2,
+    have h4 := h2 h0 h1,
+    rw h4,
 end
 
 
