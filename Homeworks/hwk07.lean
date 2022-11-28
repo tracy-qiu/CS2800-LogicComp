@@ -50,7 +50,6 @@ in this homework you can use any of the theorems listed below. some are included
 
 
 
-
 /- HWK07-01: 
 is the claim below true? if so prove it and answer the question: is your proof constructive? if you believe the claim is not true, exhibit a counterexample. 
 The claim is true and our proof is constructive. 
@@ -312,8 +311,8 @@ if you think one is strictly stronger than the other, prove the implication that
 -- ANSWER: 
  
 /-
-The two formulas are equivalent. 
-A | B | C | A → B | ¬A | ¬A → C | (A → B) ∧ (¬A → C)  
+The two formulas are equivalent. Our proof is not constructive. 
+ A | B | C | A → B | ¬A | ¬A → C | (A → B) ∧ (¬A → C)  
  t | t | t |   t   | f  |    t   |       t
  t | f | f |   f   | f  |    t   |       f
  f | t | t |   t   | t  |    t   |       t
@@ -409,25 +408,49 @@ you are NOT allowed to use neither classical.em, nor classical.by_contradiction!
 -/
 
 theorem contra_implies_em: contra → law_excluded_middle
-:= begin 
--- ANSWER:
-   intro h, 
-   intro, 
-   have h1 := h p,
-       
+:= begin
+  intro h1,
+  intro p,  
+  have h2 := h1 p,
+
+  have h3 := h1 (p ∨ ¬p),
+
+  have h4 : ¬¬ (p ∨ ¬p)
+  := begin
+    have hd_or := deMorgan_or p ¬p, 
+    intro h5, 
+    cases hd_or, 
+    {
+      have h6 := hd_or_mp h5, 
+      cases h6, 
+      trivial, 
+    } 
+  end,
+  have h5 := h3 h4, 
+  assumption, 
 end
 
-/- HWK07-09-2: 
+/- HWK07-09-2:
 can you prove theorem not_not_p_implies_p_implies_p_or_not_p below constructively?
+
+theorem not_not_p_implies_p_implies_p_or_not_p:
+  ∀ p : Prop, (¬ ¬ p → p) → (p ∨ ¬ p)
 
 explain the difference between not_not_p_implies_p_implies_p_or_not_p and contra_implies_em.
 -/
+
 -- ANSWER:
+/-
+No, we are not able to prove not_not_p_implies_p_implies_p_or_not_p constructively. The difference between not_not_p_implies_p_implies_p_or_not_p and contra_implies_em is that we have contra as a hypothesis. Therefore we are able to prove contra_implies_em using contra as a hypothesis to prove law_of_excluded_middle. In not_not_p_implies_p_implies_p_or_not_p, we only have contra with p, so we cant use it to prove law_of_excluded_middle.
+-/
+
+-- not constructively 
 theorem not_not_p_implies_p_implies_p_or_not_p: ∀ p : Prop, ¬¬ p → p ∨ ¬ p 
 := begin 
   intro p, 
   intro h, 
-  
+  have h2 := classical.em p, 
+  assumption, 
 end 
 
 
@@ -440,9 +463,11 @@ NOTE: for this problem we want you to learn to use the _rewrite_ tactic. there i
 theorem iff_trans: ∀ A B C : Prop, (A ↔ B) ∧ (B ↔ C) → (A ↔ C) 
 := begin
 -- ANSWER:
-    ... 
+  intros A B C h1, 
+  cases h1 with h2 h3, 
+  rw h3 at h2, 
+  assumption,
 end
-
 
 
 
@@ -455,11 +480,97 @@ prove the following theorem:
 for this problem, you can prove the result in any way you want. in particular, you can use any of the theorems listed above. 
 -/
 
-
 theorem not_xor: ∀ (p q : Prop), (¬ xor p q) ↔ ((p ∧ q) ∨ (¬ p ∧ ¬ q))
 := begin
 -- ANSWER:
-  ... 
+  intros p q, 
+  split, 
+  {
+    intro h,
+    have h1 := classical.em p,
+    have h2 := classical.em q, 
+    cases h1, 
+    {
+      cases h2, 
+      {
+        left, 
+        split, 
+        repeat
+        {
+          assumption, 
+        }
+      },
+      {
+        have h3 : xor p q
+        := begin
+          left, 
+          split, 
+          repeat
+          {
+            assumption, 
+          }
+        end, 
+        have h4 := h h3, 
+        trivial, 
+      }
+    },
+    {
+      cases h2, 
+      {
+        have h3 : xor p q
+        := begin
+          right, 
+          split, 
+          repeat
+          {
+            assumption, 
+          }
+        end, 
+        have h4 := h h3,
+        trivial, 
+      },
+      {
+        right, 
+        split, 
+        repeat
+        {
+          assumption, 
+        }
+      }
+    }
+  },
+  {
+    intro h, 
+    intro h1, 
+    cases h, 
+    {
+      cases h, 
+      {
+        cases h1, 
+        repeat
+        {
+          cases h1, 
+          repeat
+          {
+            trivial, 
+          }
+        }
+      },
+    },
+    {
+      cases h, 
+      {
+        cases h1, 
+        repeat
+        {
+          cases h1, 
+          {
+            trivial, 
+          }
+        },
+      },
+    }
+  }
 end
 
 
@@ -475,8 +586,6 @@ NOTES:
   - for proofs like this one, it might be a good idea to FIRST WORK OUT THE PROOF ON PAPER AND PENCIL. see how you would prove this using the logical equivalences you know (de Morgan, etc). then try to re-do the same proof in LEAN. 
 -/
 
-
-
 theorem not_xor_rw: ∀ (p q : Prop), (¬ xor p q) ↔ ((p ∧ q) ∨ (¬ p ∧ ¬ q))  
 := begin
   intro,
@@ -484,10 +593,28 @@ theorem not_xor_rw: ∀ (p q : Prop), (¬ xor p q) ↔ ((p ∧ q) ∨ (¬ p ∧ 
   unfold xor,
 -- use only the "rw" tactic (as many times as you want) in the rest of the proof. 
 -- ANSWER: 
-  ... 
+  rw deMorgan_or,
+  rw deMorgan_and, 
+  rw deMorgan_and, 
+  rw <- not_not,
+  rw <- not_not,
+  rw and_distrib_or (¬ p ∨ q) (¬ q) p,
+  rw and_comm, 
+  rw and_distrib_or,
+  rw and_comm (¬p ∨  q) p, 
+  rw and_distrib_or,
+  rw or_comm, 
+  rw p_and_not_p_eq_false, 
+  rw false_or, 
+  rw or_comm, 
+  rw and_comm (¬q) q, 
+  rw p_and_not_p_eq_false, 
+  rw or_false, 
+  rw or_comm, 
+  rw and_comm (¬q) (¬p), 
 end
 
-
+p ∧ ¬p
 
 /- HWK07-12: 
 
@@ -501,7 +628,11 @@ hint: use listeq:
 example: ∀ (x y z : ℕ) (L : list ℕ) (p : Prop), x :: y :: L = [z] → p 
 := begin
 -- ANSWER: 
-    ... 
+  intros x y z L p,
+  intro h,
+  rw listeq at h,
+  cases h,
+  trivial,
 end
 
 
@@ -534,9 +665,33 @@ if you think one is strictly stronger than the other, prove the implication that
 -/
 
 -- ANSWER:
-... 
+theorem formula2_imp_formula1: ∀ P Q, (formula2 P Q) → (formula1 P Q)
+:= begin
+  intros P Q,
+  unfold formula2, 
+  unfold formula1, 
+  intro h, 
+  intro h1, 
+  intro x, 
+  have h' := h x, 
+  have h1' := h1 x, 
+  have h2 := h' h1',
+  assumption, 
+end
 
-
+/- 
+  While formula2 implies formula1, formula1 does not imply formula2.
+  Counterexample:
+    - P is some predicate that ∀ x : ℕ, x <= 10
+    - Q is some predicate that ∀ x : ℕ, x >= 10
+  Formula 1: x = 5   P x <= 10 --> True
+             x = 15  Q x >= 10 --> True
+                     True implies True 
+  Formula 2: x = 5   P x <= 10 --> True 
+                     Q x >= 10 --> False
+                     True does not imply False
+  Formula 1 does not imply Formula 2 in the example above. 
+-/
 
 end a_bit_of_first_order_logic
 
@@ -549,7 +704,15 @@ prove the following:
 lemma plus_one_succ: ∀ x : ℕ, plus x 1 = nat.succ x 
 := begin
 -- ANSWER:
-    ... 
+  intro x,
+  induction x with y ih,
+  {
+    refl,
+  },
+  {
+    dunfold plus,
+    rw ih,
+  }
 end
 
 
@@ -561,7 +724,16 @@ theorem app_associative: ∀ L1 L2 L3 : list ℕ,
     app L1 (app L2 L3) = app (app L1 L2) L3 
 := begin
 -- ANSWER: 
-    ... 
+  intros L1 L2 L3,
+  induction L1 with x tail ih,
+  {
+    dunfold app,
+    refl,
+  },
+  {
+    dunfold app,
+    rw ih,
+  } 
 end
 
 
@@ -579,7 +751,15 @@ def minus : ℕ → ℕ → ℕ
 -/
 theorem minus_x_x: ∀ x : ℕ, minus x x = 0 
 := begin
-    ... 
+  intro x,
+  induction x with y ih,
+  {
+    refl,
+  },
+  {
+    dunfold minus,
+    assumption,
+  }
 end
 
 

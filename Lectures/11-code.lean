@@ -117,6 +117,7 @@ theorem mult_0_plus_v1:
     rw h,
 end
 
+#check zero_plus
 -- as it turns out, rw is enough: 
 theorem mult_0_plus_v2: 
     ∀ (x y : nat), mult (plus 0 x) y = mult x y 

@@ -1,4 +1,4 @@
-
+import .ourlibrary11
 -- Q.1
 theorem or_assc: ∀ A B C : Prop, or A (or B C) ↔ or (or A B) C 
 := begin 
@@ -145,7 +145,7 @@ lemma not_true_false: (not true) ↔ false := begin
   split, 
   {
     intro h, 
-    have h : true := begin 
+    have h1 : true := begin 
       trivial,
     end, 
     trivial, 
@@ -361,13 +361,13 @@ end
 -- Q3.1 
 /-
 #check (F (λ b : bool, 10) 10)
-any of the above 
+(bool -> nat) -> (nat -> bool)
 -/
 
 -- Q3.2 
 /-
 #check nat.succ (G nat.zero [(fun x : nat, x+2) 13] tt)
-
+nat -> (list nat) -> bool -> nat
 nat -> (nat -> nat) -> nat -> bool -> nat 
 -/
 
@@ -379,7 +379,8 @@ def len : list nat -> nat
 
 def elem: nat -> list ℕ -> bool 
   | _ [] := ff
-  | x L := len L ≥ x
+  | y (x :: L) := if ( y = x ) then tt else elem y L
+  -- | x L := len L ≥ x
 
 example: elem 3 [] = ff := begin refl, end 
 example: elem 3 [1] = ff := begin refl, end 
@@ -407,6 +408,9 @@ theorem elemInList2: ∀ x y: ℕ, ∀ L : list ℕ, (x :: L) == (y :: (x :: L))
   sorry,
 end
 
+theorem elemInListCorrect: ∀ x: ℕ, ∀ L1 L2 : list ℕ, elem x (app L1 L2) = (elem x L1) || (elem x L2)  := begin 
+  sorry,
+end
 
 -- Q4.4
 /- complete the right-hand side of the equality in the theorem below, so that (1) the right-hand side contains no "app"; and (2) the completed theorem is true (this implies that it also type-checks). 
@@ -418,9 +422,6 @@ do not prove the completed theorem, just state it.
 copy the theorem and the incomplete proof in the box below and replace the "..." with your code.
 -/
 
-def app : list nat -> list nat -> list nat 
-  | [] L := L 
-  | (a :: L1) L2 := a :: (app L1 L2)
 
 theorem elemapp: forall x : nat, forall L1 L2 : list nat, 
   elem x (app L1 L2) = (plus (len L1) (len L2) ≥ x)
@@ -452,7 +453,8 @@ T T T
 
 -- Q5.4 
 /-
-8 
+2^3 = 8 rows 
+2^8 possibilities
 -/
 
 
@@ -462,6 +464,11 @@ def duplicateLast: list ℕ -> list ℕ
   | [] := []
   | [x] := [x, x]
   | (x :: L) := x :: (duplicateLast L)
+
+def duplicateLastCorrect: list ℕ -> list ℕ
+  | [] := []
+  | (x :: []) := [x, x]
+  | (x :: y :: L) := x :: (x :: duplicateLast (y :: L))
 
 -- Q6.2 
 example: duplicateLast [ ] = [ ] := begin refl, end
@@ -482,8 +489,8 @@ define the function "lastElement" which takes a list of nats and returns the las
  
 def lastElement: list ℕ -> ℕ
   | [] := 0
-  | [x] := x
-  | (x :: L) := lastElement L
+  | (x :: []) := x
+  | (x :: y :: L) := lastElement L
 
 -- Q6.4 
 example: lastElement [ ] = 0 := begin refl, end
@@ -503,6 +510,6 @@ app is the usual append function, given again below.
 --   | [] L := L 
 --   | (a :: L1) L2 := a :: (app L1 L2)
 
-theorem nonempty_list_equals: ∀ L : list ℕ, duplicateLast L = app L [(lastElement L)] := begin 
+theorem nonempty_list_equals: ∀ L : list ℕ, L ≠ [] → duplicateLast L = app L [lastElement L] := begin 
   sorry
 end

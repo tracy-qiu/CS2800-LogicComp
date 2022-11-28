@@ -164,7 +164,6 @@ theorem x_implies_y_implies_x_equiv_true: ∀ x y : Prop, x → (y → x) ↔ tr
 end
 
 
-
 /- 2. x → (y → z)  is ... 
 
 A: 
