@@ -401,3 +401,15 @@ lemma m4_dmpo3 : ∀ L2 L1 acc : list ℕ, ∀ b a : ℕ,
 lemma m4_dmpo4 : ∀ L1 L2 acc : list ℕ, ∀ a b: ℕ,
   (m4 (a :: L1) [] (app_t4 acc [] (b :: L2)) ) < (m4 (a :: L1) (b :: L2) acc)
   := sorry
+
+
+def app2 : list ℕ → list ℕ → list ℕ
+| [] L := L
+| (x :: L1) L2 := x :: (app L1 L2)
+
+def m : list ℕ → list ℕ → ℕ
+:= fun L1 L2, len L1
+
+lemma m1 : ∀ (L1 L2 : list ℕ) (x : ℕ),
+(m L1 L2) < (m (x :: L1) L2) 
+:= sorry 

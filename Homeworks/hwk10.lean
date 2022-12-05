@@ -647,6 +647,15 @@ def bxeval : bx → bool
   | (bxvar v) := ff
   | (bxnot bx) := (bnot (bxeval bx))
   | (bxbin bn bx1 bx2) := (binop_eval bn (bxeval bx1) (bxeval bx2))
+  -- or write out all the cases
+  -- | (bxbin binop.and bx1 bx2) := (band (bxeval bx1) (bxeval bx2))
+  -- | (bxbin binop.or bx1 bx2) := (bor (bxeval bx1) (bxeval bx2))
+  -- | (bxbin binop.imp bx1 bx2) := (bimp (bxeval bx1) (bxeval bx2))
+  -- | (bxbin binop.iff bx1 bx2) := (biff (bxeval bx1) (bxeval bx2))
+  -- | (bxbin binop.xor bx1 bx2) := (bxor (bxeval bx1) (bxeval bx2))
+
+  
+
 --
 
 example: bxeval F = ff := begin refl, end
@@ -749,12 +758,13 @@ def sath : bx → list nat → bx → (bool × bx)
       -- tt
       (sath (bxsubst e y tt) L (bxbin binop.and e2 (bxvar y)))
       -- ff
-      (ite 
-        ((sath (bxsubst e y ff) L (bxbin binop.and e2 (bxnot (bxvar y)))).fst = tt) 
-        -- tt
-        (sath (bxsubst e y ff) L (bxbin binop.and e2 (bxnot (bxvar y))))
-        -- ff
-        (ff, (bxconst ff)))) 
+      (sath (bxsubst e y ff) L (bxbin binop.and e2 (bxnot (bxvar y)))))
+      -- (ite 
+      --   ((sath (bxsubst e y ff) L (bxbin binop.and e2 (bxnot (bxvar y)))).fst = tt) 
+      --   -- tt
+      --   (sath (bxsubst e y ff) L (bxbin binop.and e2 (bxnot (bxvar y))))
+      --   -- ff
+      --   (ff, (bxconst ff)))) 
 --
 
 

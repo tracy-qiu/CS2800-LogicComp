@@ -22,11 +22,11 @@ import .ourlibrary16
 -- feel free to remove the notation if it bothers you
 section local_notation
 
-local notation x + y := plus x y 
-local notation x - y := minus x y 
-local notation x * y := mult x y 
-local notation x ≤ y := leq x y = tt  
-local notation x < y := ltb x y = tt  
+local notation (name := plus) x + y := plus x y 
+local notation (name := minus) x - y := minus x y 
+local notation (name := mult) x * y := mult x y 
+local notation (name := leq) x ≤ y := leq x y = tt  
+local notation (name := less) x < y := ltb x y = tt  
 
 
 
@@ -37,56 +37,462 @@ prove the following theorems and lemmas.
 NOTE: -, +, *, ≤, <, is notation for our own functions minus, plus, mult, leq, ltb. 
 -/
 
-lemma leq_x_zero: ∀ x : ℕ, x ≤ 0 → x = 0 
- ... 
+lemma leq_x_zero: ∀ x : ℕ, x ≤ 0 → x = 0 :=
+begin
+intro x,
+intro h,
+cases x,
+{
+  refl,
+},
+{
+  dunfold leq at h,
+  trivial,
+}
+end 
 
-lemma ltb_zero_false: ∀ x : ℕ, ¬ x < 0 
- ... 
+lemma ltb_zero_false: ∀ x : ℕ, ¬ x < 0 :=
+begin
+intro x,
+intro h,
+cases x,
+{
+  trivial,
+},
+{
+  dunfold ltb at h,
+  trivial,
+}
+end
 
-lemma ltb_trans: ∀ x y z : ℕ, x < y → y < z → x < z 
- ... 
+lemma ltb_trans: ∀ x y z : ℕ, x < y → y < z → x < z :=
+begin
+intro x,
+induction x with a ih,
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    assumption,
+  },
+  {
+    cases z,
+    {
+      trivial,
+    },
+    {
+      dunfold ltb,
+      trivial,
+    }
+  }
+},
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    dunfold ltb at h1,
+    trivial,
+  },
+  {
+    cases z,
+    {
+      trivial,
+    },
+    {
+      dunfold ltb,
+      dunfold ltb at h1,
+      dunfold ltb at h2,
+      have h3 := ih y z h1 h2,
+      assumption,
+    }
+  }
+}
 
-lemma leq_ltb_ltb: ∀ x y z : ℕ, x ≤ y → y < z → x < z 
- ... 
+end
 
-lemma ltb_succ_succ: ∀ x : ℕ, x < nat.succ (nat.succ x)
- ... 
+lemma leq_ltb_ltb: ∀ x y z : ℕ, x ≤ y → y < z → x < z :=
+begin
+intro x,
+induction x with a ih,
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    assumption,
+  },
+  {
+    cases z,
+    {
+      trivial,
+    },
+    {
+      dunfold ltb at h2,
+      dunfold ltb,
+      trivial,
+    }
+  }
+},
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    cases z,
+    {
+      trivial,
+    },
+    {
+      dunfold ltb,
+      dunfold ltb at h2,
+      trivial,
+    }
+  },
+  {
+    cases z,
+    {
+      trivial,
+    },
+    {
+      dunfold leq at h1,
+      dunfold ltb at h2,
+      dunfold ltb,
+      have h3 := ih y z h1 h2,
+      assumption,
+    }
+  }
+}
+end
+
+lemma ltb_succ_succ: ∀ x : ℕ, x < nat.succ (nat.succ x) :=
+begin
+intro x,
+induction x with a ih,
+{
+  refl,
+},
+{
+  dunfold ltb,
+  rw ih,
+}
+end
 
 lemma x_lt_x_plus_succ_y: ∀ x y : ℕ, x < x + nat.succ y
- ... 
+:= begin
+  intro x, 
+  induction x with z ih,
+  {
+    intro y, 
+    trivial, 
+  }, 
+  {
+    intro y, 
+    dunfold plus,
+    dunfold ltb, 
+    have h := ih y,
+    exact h,
+  }
+end
 
-lemma x_minus_0: ∀ x : ℕ, x - 0 = x
- ... 
+lemma x_minus_0: ∀ x : ℕ, x - 0 = x :=
+begin
+intro x,
+cases x,
+{
+  refl,
+},
+{
+  dunfold minus,
+  refl,
+}
+end
 
 lemma minuslem2: ∀ x y : ℕ, 
   x < y → y - (x+1) = (y-1) - x 
- ...
+:= begin
+  intro x, 
+  induction x with z ih, 
+  {
+    intro y, 
+    intro h, 
+    dunfold plus, 
+    rw x_minus_0,
+  },
+  {
+    intro y, 
+    intro h, 
+    dunfold plus, 
+    cases y, 
+    {
+      refl, 
+    },
+    {
+      dunfold minus, 
+      rw x_minus_0, 
+      cases y, 
+      {
+        refl, 
+      },
+      {
+        dunfold ltb at h, 
+        have h1 := ih y.succ h,
+        rw h1, 
+        cases z, 
+        {
+          rw x_minus_0, 
+        },
+        {
+          dunfold minus, 
+          rw x_minus_0, 
+        }
+      }
+    }
+  }
+end
 
 lemma minuslem3: ∀ x y z : ℕ, 
-  x < y → z ≤ x → x - z < y - z 
- ...
+  x < y → z ≤ x → x - z < y - z :=
+begin
+intro x,
+induction x with a ih,
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    cases z,
+    {
+      rw x_minus_0,
+      rw x_minus_0(y.succ),
+      assumption,
+    },
+    {
+      dunfold minus,
+      trivial,
+    }
+  }
+},
+{
+  intros y z,
+  intros h1 h2,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    cases z,
+    {
+      dunfold minus,
+      dunfold ltb,
+      dunfold ltb at h1,
+      assumption,
+    },
+    {
+      dunfold minus,
+      dunfold ltb at h1,
+      dunfold leq at h2,
+      have h3 := ih y z h1 h2,
+      assumption,
+    }
+  }
+}
+end
 
-lemma ltb_1_leb: ∀ x y : ℕ, x < y → x+1 ≤ y 
- ... 
+lemma ltb_1_leb: ∀ x y : ℕ, x < y → x+1 ≤ y :=
+begin
+intro x,
+induction x with a ih,
+{
+  intro y,
+  intro h,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    dunfold ltb at h,
+    assumption,
+  }
+},
+{
+  intro y,
+  intro h,
+  cases y,
+  {
+    dunfold ltb at h,
+    trivial,
+  },
+  {
+    dunfold plus,
+    dunfold leq,
+    dunfold ltb at h,
+    have h2 := ih y h,
+    assumption,
+  }
+}
+end
 
 lemma minuslem4: ∀ x y : ℕ, x < y → x ≤ (y-1) 
- ... 
+:= begin
+  intro x, 
+  induction x with z ih, 
+  {
+    intro y, 
+    intro h, 
+    trivial, 
+  },
+  {
+    intro y, 
+    cases y, 
+    {
+      intro h, 
+      trivial, 
+    },
+    {
+      dunfold minus, 
+      dunfold ltb, 
+      intro h, 
+      rw x_minus_0,
+      cases y, 
+      {
+        have h1 := ltb_zero_false z,
+        trivial,
+      },
+      {
+        dunfold leq,
+        have h1 := ih y.succ h, 
+        dunfold minus at h1,
+        rw x_minus_0 at h1,
+        assumption
+      }
+    }
+  }
+end 
 
-lemma ltb_plus_left: ∀ (x y z : ℕ), x < y <-> (z + x < z + y)
- ... 
+lemma ltb_plus_left: ∀ (x y z : ℕ), x < y <-> (z + x < z + y) :=
+begin
+ intro,
+ intro,
+ intro,
+ split,
+ {
+  intro h,
+  induction z with m ih,
+ {
+      dunfold plus,
+      assumption,
+    },
+    {
+      dunfold plus,
+      dunfold ltb,
+      assumption,
+    },
+  },
+  {
+    intro h,
+    induction z with m ih,
+    {
+      dunfold plus at h,
+      assumption,
+    },
+    {
+      dunfold plus at h,
+      dunfold ltb at h,
+      have h1 := ih h,
+      assumption,
+    },
+  },
+end 
 
 lemma ltb_leq: ∀ x y : ℕ, x < y → x ≤ y 
  ... 
 
+
 lemma minus_plus_cancel: 
   ∀ x y : ℕ, x ≤ y → (y - x) + x = y 
- ... 
+:= begin
+  intro x, 
+  induction x with z ih,
+  {
+    intro y, 
+    intro h, 
+    rw x_minus_0,
+    rw plus_x_zero,
+  },
+  {
+    intro y, 
+    cases y, 
+    {
+      intro h, 
+      trivial, 
+    },
+    {
+      dunfold leq,
+      dunfold minus, 
+      rw <- plus_x_succ_y,
+      rw succeq,
+      have h := ih y, 
+      exact h, 
+    }
+  }
+end 
 
-lemma x_ltb_x_plus_y: ∀ x y : ℕ, y ≠ 0 → x < x + y 
- ... 
+lemma x_ltb_x_plus_y: ∀ x y : ℕ, y ≠ 0 → x < x + y :=
+begin
+intro x,
+cases x,
+{
+  intro y,
+  intro h,
+  rw plus_commut,
+  rw plus_x_zero,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    dunfold ltb,
+    trivial,
+  }
+},
+{
+  intros y h,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    rw x_lt_x_plus_succ_y,
+  }
+}
+end
 
-lemma ltb_x_y_0: ∀ x y : ℕ, 0 < y → x < x + y 
- ... 
+lemma ltb_x_y_0: ∀ x y : ℕ, 0 < y → x < x + y :=
+begin
+intro x,
+cases x,
+{
+  intros y h,
+  rw plus_commut,
+  rw plus_x_zero,
+  assumption,
+},
+{
+  intros y h,
+  cases y,
+  {
+    trivial,
+  },
+  {
+    rw x_lt_x_plus_succ_y,
+  }
+}
+end
 
 
 /- HWK11-02: 
@@ -104,7 +510,28 @@ def drop_last : list ℕ → list ℕ
   | (a :: b :: L) := a :: (drop_last (b :: L))
 
 -- ANSWER: 
-... 
+def m_drop_last : list ℕ → ℕ := fun L1, len L1
+
+lemma ltb_succ: ∀ x : ℕ,  ltb x (nat.succ x) = tt 
+:= begin
+    intro,
+    induction x with z ih,
+    refl,
+    rw ltb,
+    assumption,
+end
+
+theorem m_drop_last_decreases: ∀ (L : list ℕ) (a b : ℕ),
+ltb (m_drop_last (b :: L)) (m_drop_last (a :: b :: L)) = tt :=
+begin
+intros L a b,
+  dunfold m_drop_last,
+  dunfold len,
+  dunfold ltb,
+  have h1 := ltb_succ (len L),
+  assumption,
+end
+
 
 
 /- HWK11-03: 
